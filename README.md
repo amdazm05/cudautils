@@ -6,13 +6,13 @@
 
 ### Running tests
 All tests will show up as executables .(Will be making a testing framework too soon don't know when )
-'''
+```
 mkdir build 
 cd build 
 cmake ..
 make 
-'''
+```
 ### Using the utilities
-'''
+```
 add_subdirectory(${PATH}/utilities.cc)
-'''
+```
