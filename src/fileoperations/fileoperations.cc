@@ -5,10 +5,12 @@ std::shared_ptr<FileOperations> FileOperations::_instance = nullptr;
 void ofstream_deleter(std::ofstream * ptr)
 {
     ptr->close();
+    std::cout<<"Destroyed"<<std::endl;
 }
 void ifstream_deleter(std::ifstream * ptr)
 {   
     ptr->close();
+    std::cout<<"Destroyed"<<std::endl;
 }
 //
 
