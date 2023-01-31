@@ -8,6 +8,12 @@ include_directories(
 add_library(utils
     STATIC
     ${PROJECT_SOURCE_DIR}/src/fileoperations/fileoperations.cc
+    ${PROJECT_SOURCE_DIR}/src/thread/thread_pool.cc
+)
+target_include_directories(
+    utils
+    PUBLIC
+    ${PROJECT_SOURCE_DIR}/include
 )
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/main/main.cc)

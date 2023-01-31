@@ -7,16 +7,16 @@ class FileOperations
 {
     public:
         static void init();
-        static std::unique_ptr<FileOperations> getinstance();
-        void readfromfile(std::string filename,char * buffer, size_t sizeofbuffer);
-        void writetofile (std::string filename,char * buffer, size_t sizeofbuffer);
+        static std::shared_ptr<FileOperations> getinstance();
+        void readfromfile(std::string&& filename,char * buffer, size_t sizeofbuffer);
+        void writetofile (std::string&& filename,char * buffer, size_t sizeofbuffer);
 
         ~FileOperations();
     private:
-        static std::unique_ptr<FileOperations> _instance; 
+        static std::shared_ptr<FileOperations> _instance; 
         FileOperations();
         std::unordered_map<std::string,std::ofstream> filewritehandles;
-        std::unordered_map<std::string,std::ifstream> filereadhandle; 
+        std::unordered_map<std::string,std::ifstream> filereadhandles; 
 };  
 
 #endif //_FILEOPS

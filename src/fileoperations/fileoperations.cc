@@ -12,19 +12,19 @@ void FileOperations::init()
     
 }
 
-std::unique_ptr<FileOperations> FileOperations::getinstance()
+std::shared_ptr<FileOperations> FileOperations::getinstance()
 {
     return _instance;
 }
 
-void FileOperations::readfromfile(std::string filename,char * buffer, size_t sizeofbuffer)
+void FileOperations::readfromfile(std::string&& filename,char * buffer, size_t sizeofbuffer)
 {
-    if(filereadhandles.find(filename) != filewritehandles.end())
+    if(filereadhandles.find(filename) != filereadhandles.end())
     {
         std::ofstream file(filename, std::ios::in | std::ios::binary);
-        filereadhandles.insert(std::pair<std::string,std::ofstream>(filename,std::move(file)));
+        filereadhandles.emplace(std::pair<std::string,std::ofstream>(filename,std::move(file)));
     }
-    filereadhandles.find(filename)->second->read(buffer,sizeofbuffer);
+    filereadhandles.find(filename)->second.read(buffer,sizeofbuffer);
 }
 
 void writetofile (std::string filename,char * buffer, size_t sizeofbuffer)
