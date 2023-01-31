@@ -1,15 +1,14 @@
 #include "fileoperations/fileoperations.hpp"
+std::shared_ptr<FileOperations> FileOperations::_instance = nullptr; 
 
 // Deleters
 void ofstream_deleter(std::ofstream * ptr)
 {
     ptr->close();
-    delete [] ptr;
 }
 void ifstream_deleter(std::ifstream * ptr)
 {   
     ptr->close();
-    delete [] ptr;
 }
 //
 
@@ -32,32 +31,77 @@ std::shared_ptr<FileOperations> FileOperations::getinstance()
 
 void FileOperations::readfromfile(std::string&& filename,char * buffer, size_t sizeofbuffer)
 {
-    if(filereadhandles.find(filename) != filereadhandles.end())
+    if(filereadhandles.size())
     {
-        // emplaces an ofstream object into the map
-        filereadhandles.emplace
-        (
-            std::pair<MAP_SIGNATURE_IFSTREAM>
-            (   
-                filename,
-                std::move
-                (
-                    std::unique_ptr<std::ifstream,void(*)(std::ifstream *)>
+        if(filereadhandles.find(filename) != filereadhandles.end())
+        {
+            // emplaces an ofstream object into the map
+            filereadhandles.emplace
+            (
+                std::pair<MAP_SIGNATURE_IFSTREAM>
+                (   
+                    filename,
+                    std::move
                     (
-                        new std::ifstream(filename, std::ios::in | std::ios::binary), ifstream_deleter
+                        std::unique_ptr<std::ifstream,void(*)(std::ifstream *)>
+                        (
+                            new std::ifstream(filename, std::ios::in | std::ios::binary), 
+                            ifstream_deleter
+                        )
                     )
                 )
-            )
-        );
+            );
+        }
+    }
+    else
+    {
+         filereadhandles.emplace
+            (
+                std::pair<MAP_SIGNATURE_IFSTREAM>
+                (   
+                    filename,
+                    std::move
+                    (
+                        std::unique_ptr<std::ifstream,void(*)(std::ifstream *)>
+                        (
+                            new std::ifstream(filename, std::ios::in | std::ios::binary), 
+                            ifstream_deleter
+                        )
+                    )
+                )
+            );
     }
     filereadhandles.find(filename)->second->read(buffer,sizeofbuffer);
+
+        
 }
 
 void FileOperations::writetofile(std::string&& filename,char * buffer, size_t sizeofbuffer)
 {
-    if(filewritehandles.find(filename) != filewritehandles.end())
+    if(filewritehandles.size())
     {
-        // emplaces an ofstream object into the map
+        if(filewritehandles.find(filename) != filewritehandles.end())
+        {
+            filewritehandles.emplace
+            (
+                std::pair<MAP_SIGNATURE_OFSTREAM>
+                (   
+                    filename,
+                    std::move
+                    (
+                        std::unique_ptr<std::ofstream,void(*)(std::ofstream *)>
+                        (
+                            new std::ofstream(filename, std::ios::out | std::ios::app | std::ios::binary), 
+                            ofstream_deleter
+                        )
+                    )
+                )
+            );
+        }
+    }
+
+    else
+    {
         filewritehandles.emplace
         (
             std::pair<MAP_SIGNATURE_OFSTREAM>
@@ -67,16 +111,23 @@ void FileOperations::writetofile(std::string&& filename,char * buffer, size_t si
                 (
                     std::unique_ptr<std::ofstream,void(*)(std::ofstream *)>
                     (
-                        new std::ofstream(filename, std::ios::out | std::ios::binary), ofstream_deleter
+                        new std::ofstream(filename, std::ios::out | std::ios::app |std::ios::binary), 
+                        ofstream_deleter
                     )
                 )
             )
         );
     }
     filewritehandles.find(filename)->second->write(buffer,sizeofbuffer);
+    filewritehandles.find(filename)->second->flush();
 }
 
 FileOperations::FileOperations()
 {
 
+}
+
+FileOperations::~FileOperations()
+{
+    
 }
