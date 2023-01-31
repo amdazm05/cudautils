@@ -6,7 +6,7 @@
 class ThreadPool
 {
     std::atomic_bool isDone;
-    
-}
+
+};
 
 #endif //_THREADPOOL
