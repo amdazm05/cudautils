@@ -8,10 +8,12 @@
 // It should send results back 
 // Execute arbitrary functions
 
+template<class T>
 class ThreadQueue
 {
     private:
         std::queue<std::thread> _threadQueue;
+        std::queue<T> _tasks;
         std::atomic_bool _isDone;
         mutable bool _isBlockingQueue;
         // Only telling this to be able to mutate 
@@ -24,7 +26,7 @@ class ThreadQueue
         using readLock  = std::shared_lock<std::shared_mutex>;
         ThreadQueue();
         void clear();
-        void push();
+        void push(T function);
         void pop();
         void emplace();
         ~ThreadQueue();
@@ -33,7 +35,7 @@ class ThreadQueue
 class ThreadPoolManager 
 {
     private:
-    ThreadQueue _threadQueueInstance;
+    ThreadQueue<std::function<void()>> _threadQueueInstance;
     std::shared_ptr<ThreadPoolManager> _instance;
     ThreadPoolManager();
 
