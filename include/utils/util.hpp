@@ -23,6 +23,9 @@
 #include <mutex>
 #include <shared_mutex>
 
+// Future
+#include <future>
+
 // containers
 #include <queue>
 #include <vector>
