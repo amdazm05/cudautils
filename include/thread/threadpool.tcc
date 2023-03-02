@@ -25,6 +25,7 @@ class ThreadPool
     static void init(std::size_t numberOfThreads);
     static std::shared_ptr<ThreadPool> get_instance();
     void runPool();
+    ~ThreadPool();
     // Now this needs to be binded
     template<class T, class... Args>
     typename std::result_of<T(Args...)>::type queueTask(T && invokAble , Args && ... arguments);
@@ -34,12 +35,15 @@ template<class T, class... Args>
 typename std::result_of<T(Args...)>::type ThreadPool::queueTask(T && invokAble , Args && ... arguments)
 {
   
-    std::packaged_task<typename std::result_of<T(Args...)>::type()>  PackedTask
-    (
-        std::bind(std::forward<T>(invokAble),std::forward<Args>(arguments)...)
-    );
+    std::shared_ptr<std::packaged_task<typename std::result_of<T(Args...)>::type()>> PackedTask = 
+    std::make_shared<std::packaged_task<typename std::result_of<T(Args...)>::type()>>
+        (
+            std::bind(std::forward<T>(invokAble),std::forward<Args>(arguments)...)
+        );
 
-    std::future<typename std::result_of<T(Args...)>::type> result = PackedTask.get_future();
+    std::future<typename std::result_of<T(Args...)>::type> result = PackedTask->get_future();
+    std::function<void()> voidTaskPackaged = [PackedTask](){(*PackedTask)();};
+    _TasksQueue.emplace(std::move(voidTaskPackaged));
     //  passes the task into the TaskQueue once it is finished the result will be returned as the type of the function that was passed
     return result.get();
 }

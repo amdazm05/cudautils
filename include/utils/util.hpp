@@ -23,6 +23,9 @@
 #include <mutex>
 #include <shared_mutex>
 
+// Condition variables
+#include <condition_variable>
+
 // Future
 #include <future>
 

@@ -5,14 +5,21 @@ std::size_t ThreadPool::_numberOfThreads;
 void ThreadPool::init(std::size_t numberOfthreads)
 {
     _instance = std::shared_ptr<ThreadPool>(new ThreadPool);
-    _numberOfThreads = std::thread::hardware_concurrency();    
+    _numberOfThreads = numberOfthreads;    
 }
 
 ThreadPool::ThreadPool()
 {
-    
+
 }
 
+ThreadPool::~ThreadPool()
+{
+    for(int i=0;i<_workers.size();i++)
+    {
+        _workers[i].join();
+    }
+}
 
 std::shared_ptr<ThreadPool> ThreadPool::get_instance()
 {
@@ -21,7 +28,7 @@ std::shared_ptr<ThreadPool> ThreadPool::get_instance()
 
 void ThreadPool::runPool()
 {
-   for(int i =0 ; i < _numberOfThreads;)
+   for(int i =0 ; i <_numberOfThreads ;i++)
    {
         _workers.emplace_back
         (
@@ -32,8 +39,11 @@ void ThreadPool::runPool()
                 {
                     // invokes the invokable
                     if(!_TasksQueue.empty())
+                    {
                         (_TasksQueue.front())();
-
+                        // Remove the task from the Task Queue as it is compeleted
+                        _TasksQueue.pop();
+                    }
                 }
             }
         );

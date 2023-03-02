@@ -18,17 +18,17 @@ class ThreadSafeTaskQueue
         void clear();
         bool empty();
         T & front();
-        void push(T &function);
+        void push(T &&function);
         void pop();
-        void emplace(T&function);
+        void emplace(T&&function);
         ~ThreadSafeTaskQueue();
 };
 
 template<typename T>
-void ThreadSafeTaskQueue<T>::push(T &function)
+void ThreadSafeTaskQueue<T>::push(T &&function)
 {
     uniqueLock(_mtx);
-    this->_taskQueue.push(std::move(&function));
+    this->_taskQueue.push(function);
 }
 
 template<typename T>
@@ -54,10 +54,10 @@ void ThreadSafeTaskQueue<T>::pop()
 }
 
 template<typename T>
-void ThreadSafeTaskQueue<T>::emplace(T &function)
+void ThreadSafeTaskQueue<T>::emplace(T &&function)
 {
     uniqueLock(_mtx);
-    this->_taskQueue.emplace(std::move(&function));
+    this->_taskQueue.emplace(function);
 }
 template<typename T>
 ThreadSafeTaskQueue<T>::ThreadSafeTaskQueue()
