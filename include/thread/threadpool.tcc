@@ -9,39 +9,39 @@
 // Execute arbitrary functions
 // template tells the type of arguements that is to be passed in to the task 
 // something along these lines 
-class ThreadPoolManager 
+class ThreadPool 
 {
     private:
     std::atomic_bool _isDone;
     std::vector<std::thread> _workers;
     ThreadSafeTaskQueue<std::function<void()>> _TasksQueue;
-    std::shared_ptr<ThreadPoolManager> _instance;
+    static std::shared_ptr<ThreadPool> _instance;
     // A pool is supposed to have the threads equal to the number of hardware concurrent threads possible
-    std::size_t _numberOfThreads; // = std::thread::hardware_concurrency()
-    ThreadPoolManager();
-    ThreadPoolManager(std::size_t numberOfThreads);
+    static std::size_t _numberOfThreads; // = std::thread::hardware_concurrency()
+    ThreadPool();
+    ThreadPool(std::size_t numberOfThreads);
 
     public:
-    static void init(std::size_T numberOfThreads);
-    static std::shared_ptr<ThreadPoolManager> get_instance();
+    static void init(std::size_t numberOfThreads);
+    static std::shared_ptr<ThreadPool> get_instance();
     void runPool();
     // Now this needs to be binded
     template<class T, class... Args>
-    std::future<typename std::result_of<T(Args...)>::type> queueTask(T && invokAble , Args && ... arguments);
+    typename std::result_of<T(Args...)>::type queueTask(T && invokAble , Args && ... arguments);
 };
+
 template<class T, class... Args>
-std::future<typename std::result_of<T(Args...)>::type> ThreadPoolManager::queueTask(T && invokAble , Args && ... arguments)
+typename std::result_of<T(Args...)>::type ThreadPool::queueTask(T && invokAble , Args && ... arguments)
 {
-    std::shared_ptr<std::packaged_task<void()>> taskptr= std::make_shared<std::packaged_task<void()>>
+  
+    std::packaged_task<typename std::result_of<T(Args...)>::type()>  PackedTask
     (
-        std::packaged_task<void()> taskPackaged
-        (
-            std::bind(std::forward<T>(invokAble),std::forward<Args>(arguments)...)
-        )
+        std::bind(std::forward<T>(invokAble),std::forward<Args>(arguments)...)
     );
-    std::future<typename std::result_of<T(Args...)>::type> result = taskptr ->get_future();
-    _TasksQueue.emplace([taskptr](){(*taskptr)()});
-    return result;
+
+    std::future<typename std::result_of<T(Args...)>::type> result = PackedTask.get_future();
+    //  passes the task into the TaskQueue once it is finished the result will be returned as the type of the function that was passed
+    return result.get();
 }
 
 #endif //_THREADPOOL
