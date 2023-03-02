@@ -12,6 +12,8 @@
 class ThreadPool 
 {
     private:
+    std::mutex _mtx;
+    std::condition_variable _condition;
     std::atomic_bool _isDone;
     std::vector<std::thread> _workers;
     ThreadSafeTaskQueue<std::function<void()>> _TasksQueue;
@@ -20,11 +22,13 @@ class ThreadPool
     static std::size_t _numberOfThreads; // = std::thread::hardware_concurrency()
     ThreadPool();
     ThreadPool(std::size_t numberOfThreads);
+    bool stopFlag;
 
     public:
     static void init(std::size_t numberOfThreads);
     static std::shared_ptr<ThreadPool> get_instance();
     void runPool();
+    void cleanse();
     ~ThreadPool();
     // Now this needs to be binded
     template<class T, class... Args>
@@ -43,7 +47,12 @@ typename std::result_of<T(Args...)>::type ThreadPool::queueTask(T && invokAble ,
 
     std::future<typename std::result_of<T(Args...)>::type> result = PackedTask->get_future();
     std::function<void()> voidTaskPackaged = [PackedTask](){(*PackedTask)();};
-    _TasksQueue.emplace(std::move(voidTaskPackaged));
+    
+    {
+        std::unique_lock<std::mutex> lock(_mtx);
+        _TasksQueue.emplace(std::move(voidTaskPackaged));
+    }
+    _condition.notify_one();
     //  passes the task into the TaskQueue once it is finished the result will be returned as the type of the function that was passed
     return result.get();
 }

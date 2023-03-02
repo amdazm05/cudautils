@@ -6,16 +6,22 @@ void ThreadPool::init(std::size_t numberOfthreads)
 {
     _instance = std::shared_ptr<ThreadPool>(new ThreadPool);
     _numberOfThreads = numberOfthreads;    
+
 }
 
 ThreadPool::ThreadPool()
 {
-
+    stopFlag = false;
 }
 
 ThreadPool::~ThreadPool()
 {
-    for(int i=0;i<_workers.size();i++)
+    {
+        std::unique_lock<std::mutex> lock(_mtx);
+        stopFlag= true;
+    }
+    _condition.notify_all();
+    for(int i=0;i<_numberOfThreads;i++)
     {
         _workers[i].join();
     }
@@ -37,15 +43,27 @@ void ThreadPool::runPool()
             {
                 for(;;)
                 {
-                    // invokes the invokable
-                    if(!_TasksQueue.empty())
+                    std::function<void()> task;
                     {
-                        (_TasksQueue.front())();
-                        // Remove the task from the Task Queue as it is compeleted
+                        std::unique_lock<std::mutex> lock(_mtx);
+                        _condition.wait(lock,[this]{ return stopFlag || !_TasksQueue.empty();});
+                        if(stopFlag)
+                        {
+                            return;
+                        }
+                        task = std::move((_TasksQueue.front()));
                         _TasksQueue.pop();
                     }
+                    task();
+
                 }
             }
         );
    }
 }
+
+ void ThreadPool::cleanse()
+ {
+    _instance.reset();
+
+ }
