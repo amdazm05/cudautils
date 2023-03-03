@@ -8,7 +8,7 @@ include_directories(
 add_library(utils
     STATIC
     ${PROJECT_SOURCE_DIR}/src/fileoperations/fileoperations.cc
-    ${PROJECT_SOURCE_DIR}/src/thread/thread_pool.cc
+    ${PROJECT_SOURCE_DIR}/src/thread/threadpool.cc
 )
 target_include_directories(
     utils
@@ -18,9 +18,7 @@ target_include_directories(
 
 if(TESTS_ENABLED)
     add_executable(filetest ${PROJECT_SOURCE_DIR}/tests/fileoperationtest.cc)
+    add_executable(threadpooltest ${PROJECT_SOURCE_DIR}/tests/threadpooltest.cc)
     target_link_libraries(filetest  utils)
+    target_link_libraries(threadpooltest  utils)
 endif()
-# FILE(
-#     COPY ${PROJECT_SOURCE_DIR}/input
-#     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
-# )
