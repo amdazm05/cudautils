@@ -1,8 +1,8 @@
 ### These are just utilities that one would like to have
 |Utility      | What it does | Status     |
 | :---        |    :----:   |          ---: |
-| fileoperations    | reads and writes to files , also maintains a map for the files read and written       | partially completed   |
-| threadpool   | used for creating pools of threads for various concurrent operations| WIP |
+| fileoperations    | reads and writes to files , also maintains a map for the files read and written       |  completed   |
+| threadpool   | used for creating pools of threads for various concurrent operations| completed |
 
 ### Running tests
 All tests will show up as executables .(Will be making a testing framework too soon don't know when )
