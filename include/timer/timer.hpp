@@ -4,6 +4,7 @@
 #include "utils/util.hpp"
 
 using system_stopwatch = std::chrono::system_clock;
+using duration = std::chrono::duration<double>;
 using monotonic_stopwatch = std::chrono::steady_clock;
 template<class TypeofClock, class Duration>
 class Timer
@@ -15,34 +16,34 @@ class Timer
         double getTime();
         ~Timer();
     private:
-        TypeofClock start;
-        TypeofClock stop;
+        std::chrono::time_point<TypeofClock> start;
+        std::chrono::time_point<TypeofClock>  stop;
         Duration elapsedTime;
 };
 
 template<class TypeofClock, class Duration>
-Timer<T>::Timer()
+Timer<TypeofClock,Duration>::Timer()
 {
 
 }
 
 template<class TypeofClock, class Duration>
-void Timer<T>::startTimer()
+void Timer<TypeofClock,Duration>::startTimer()
 {
-    start = T::now();
+    start = TypeofClock::now();
 }
 
 template<class TypeofClock, class Duration>
-double Timer<TypeofClock,Duration>::getTime()
+double  Timer<TypeofClock,Duration>::getTime()
 {
-    return elapsedTime.count;
+    return elapsedTime.count();
 }
 
 template<class TypeofClock, class Duration>
 void Timer<TypeofClock,Duration>::stopTimer()
 {
-    stop = T::now();
-    elapsedTime = start - stop;
+    stop = TypeofClock::now();
+    elapsedTime = stop - start;
 }
 
 template<class TypeofClock, class Duration>

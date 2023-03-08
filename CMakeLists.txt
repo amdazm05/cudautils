@@ -19,6 +19,8 @@ target_include_directories(
 if(TESTS_ENABLED)
     add_executable(filetest ${PROJECT_SOURCE_DIR}/tests/fileoperationtest.cc)
     add_executable(threadpooltest ${PROJECT_SOURCE_DIR}/tests/threadpooltest.cc)
+    add_executable(timertests ${PROJECT_SOURCE_DIR}/tests/testtimers.cc)
     target_link_libraries(filetest  utils)
     target_link_libraries(threadpooltest  utils)
+    target_link_libraries(timertests  utils)
 endif()
