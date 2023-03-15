@@ -12,7 +12,7 @@ class MemoryPool
 
         
         template<class T>
-        std::shared_ptr<T> allocateChunkinPool(std::size_t size);
+        T *allocateChunkinPool(std::size_t size);
         
 
     private: 
@@ -22,19 +22,22 @@ class MemoryPool
 };
 
 template<class T>
-std::shared_ptr<T> MemoryPool::allocateChunkinPool(std::size_t size)
+T * MemoryPool::allocateChunkinPool(std::size_t size)
 {
+    T * ptr = nullptr;
     // if current memory allocation pointer + size is less than the allocated memory than break and return null
-    if((_currentMemoryAllocatedPointerIndex +  size) < _allocatedMemorySize)
+    if((_currentMemoryAllocatedPointerIndex +  size) > _allocatedMemorySize)
     {
-        return nullptr;
+        ptr=  nullptr;
     }
 
     else
     {
+        std::size_t ptrIndex = _currentMemoryAllocatedPointerIndex;
         _currentMemoryAllocatedPointerIndex +=size;
-        return  std::shared_ptr<T>((T*)_allocationPointer.get());
+        ptr = (T*)(_allocationPointer.get()+ptrIndex);
     }
+    return  ptr;
 }
 
 #endif //_MEMORY
