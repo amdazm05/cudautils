@@ -9,6 +9,7 @@ add_library(utils
     STATIC
     ${PROJECT_SOURCE_DIR}/src/fileoperations/fileoperations.cc
     ${PROJECT_SOURCE_DIR}/src/thread/threadpool.cc
+    ${PROJECT_SOURCE_DIR}/src/memory/memorypool.cc
 )
 target_include_directories(
     utils
@@ -20,7 +21,9 @@ if(TESTS_ENABLED)
     add_executable(filetest ${PROJECT_SOURCE_DIR}/tests/fileoperationtest.cc)
     add_executable(threadpooltest ${PROJECT_SOURCE_DIR}/tests/threadpooltest.cc)
     add_executable(timertests ${PROJECT_SOURCE_DIR}/tests/testtimers.cc)
+    add_executable(memorypooltest ${PROJECT_SOURCE_DIR}/tests/memorypooltest.cc)
     target_link_libraries(filetest  utils)
     target_link_libraries(threadpooltest  utils)
     target_link_libraries(timertests  utils)
+    target_link_libraries(memorypooltest utils)
 endif()
