@@ -15,8 +15,10 @@ class Coroutines : std::coroutine_handle<promise>
         void return_void() {}
         void unhandled_exception() {}
     };
+    Coroutine(promise * prom):
+        m_handle(std::coroutine_handle<promise>::from_promise(*prom)){}
+    ~Coroutines(){m_handle.destroy();}
+    std::coroutine_handle<promise> m_handle;
 };
-
-
 
 #endif
