@@ -19,6 +19,11 @@ target_include_directories(
     PUBLIC
     ${PROJECT_SOURCE_DIR}/include
 )
+target_link_libraries(
+    utils
+    PUBLIC
+    pthread
+)
 
 if(TESTS_ENABLED)
     add_executable(filetest ${PROJECT_SOURCE_DIR}/tests/fileoperationtest.cc)
