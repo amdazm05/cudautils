@@ -13,8 +13,13 @@ class CSVParser
         CSVParser();
         ~CSVParser();
         void readCSVfile(std::string && filename);
+        std::vector<T> && getDataVector();
+        
     private:
         std::fstream csvfile();
+        std::size_t currentRow;
+        std::size_t currentColumn;
+        std::vector<T> vectorOfdata;
 }
 
 #endif //_CSV_PARSER
