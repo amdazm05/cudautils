@@ -14,12 +14,11 @@ class CSVParser
         ~CSVParser();
         void readCSVfile(std::string && filename);
         std::vector<T> && getDataVector();
-        
     private:
         std::fstream csvfile();
         std::size_t currentRow;
         std::size_t currentColumn;
         std::vector<T> vectorOfdata;
 }
-
+// Search this up https://en.cppreference.com/w/cpp/keyword/reflexpr
 #endif //_CSV_PARSER
