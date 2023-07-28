@@ -37,4 +37,7 @@
 //coroutines
 #include <coroutine>
 
+#include <concepts>
+#include <type_traits>
+
 #endif
